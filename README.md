@@ -9,4 +9,7 @@ Alpha bacterial diversity was measured using the shannon diversity index. The sh
 
 To compare the microbial communities among the treatment groups at the beginning and after treatment, beta diversity was calculated using the Bray-Curtis distance matrix. 
 
-In the name of Rmd files GFD stands for Gluten free diet and GCD for gluten containg diet. All of the Rmd files starting with name GFD has codes for microbiome analyis of Gluten free diet fed mice. Whereas, all of the Rmd files starting with name GCD has codes for microbiome analyis of Gluten containing diet fed mice.
+In the name of Rmd files GFD stands for Gluten free diet and GCD for gluten containg diet.
+All of the Rmd files starting with name GFD has codes for microbiome analyis of Gluten free diet fed mice. file named as "Gluten_free_Diet_qiime_Green_gene_finalinjected_as_pm2.rds" is an input for Rmd files, whose name is starting with GFD. 
+
+Whereas, all of the Rmd files starting with name GCD has codes for microbiome analyis of Gluten containing diet fed mice. "Gluten_Containing_Diet_qiime_Green_gene_final.rds" is an input for Rmd files, whose name is starting with GCD. 
