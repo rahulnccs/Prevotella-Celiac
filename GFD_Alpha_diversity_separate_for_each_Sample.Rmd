@@ -1,0 +1,101 @@
+---
+title: "Alpha Diversity Oral Tolerance Project"
+author: "Rahul Bodkhe"
+date: "May 23, 2019"
+output: html_document
+---
+
+#Alpha Diversity
+```{R}
+library(ggplot2)
+library(ape)
+library(plyr)
+library(vegan)
+library(Biostrings)
+library(RColorBrewer)
+library(reshape2)
+library(scales)
+library(data.table)
+library(dplyr)
+library(phyloseq)
+library(ggplot2)
+library(data.table)
+library(dplyr)
+library(vegan)
+library(RColorBrewer)
+library(reshape2)
+library(ggpubr)
+```
+##1. Alphadiversity in P histicola before and after
+```{r}
+rm(list = ls())
+pseq1 <- readRDS("Gluten_free_Diet_qiime_Green_gene_finalinjected_as_pm2.rds")
+pseq3 <- subset_samples(pseq1, Treatment!= "Media_A.Muc")
+pseq4 <- subset_samples(pseq3, Treatment!= "Media_F.praus")
+pseq7 <- subset_samples(pseq4, Treatment != c("F.prausnitzii"))
+pseq88 <- subset_samples(pseq7, Sample_names != "1715a") 
+pseq9 <- subset_samples(pseq88, Sample_names != "1716b")
+pseq8 <- subset_samples(pseq9, Sample_names != "1705b")
+pseq9 <- subset_samples(pseq8, Sample_names != "1709b") 
+pseq10 <- subset_samples(pseq9, Sample_names != "1731b")
+pseq11 <- subset_samples(pseq10, Sample_names != "1732b")
+pseq69 <- subset_samples(pseq11, Sample_names != "1733b")
+pseq70 <- subset_samples(pseq69, Sample_names != "1704b")
+pseq72 <- subset_samples(pseq70, Sample_names != "1706b")
+pseq73 <- subset_samples(pseq72, Sample_names != "1707b")
+pseq744 <- subset_samples(pseq73, Sample_names != "1730b")
+pseq74 <- subset_samples(pseq744, Sample_names != "1730a")
+pseq75 <- subset_samples(pseq74, Sample_names != "1729b")
+pseq12 <- subset_samples(pseq75, Treatment != c("A.Muciniphila")) 
+pseq13 <- subset_samples(pseq12, Treatment != c(".Naïve"))
+pseq15 <- subset_samples(pseq13, Treatment != c(".PTD_Gliadin_Injected")) 
+pseq15
+pseq <- prune_taxa(taxa_sums(pseq15)>1, pseq15)
+sample_data(pseq)
+```
+
+
+```{r}
+my_comparisons1<- list(c("Mice_Sacrificed", "Experiment_Started"))
+div.all <- estimate_richness(pseq)
+
+alpha.ps1 <- plot_richness(pseq, x="Time_of_sampling", measures=c("Shannon")) + geom_boxplot(aes(fill=Treatment))
+
+p1 <- alpha.ps1 + scale_fill_manual(values = c("#3399FF",  "#000099","#009900")) + theme(strip.background = element_rect(fill="white")) + ggtitle("Diversity of gut microbiota of GFD fed mice") + theme_bw(base_size = 12) + theme(plot.title = element_text(size = 12)) + theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) + facet_grid(cols = vars(Treatment)) + stat_compare_means(comparisons = my_comparisons1, method = "wilcox.test", size = 3)
+print(p1)
+
+ggsave("after removing 1730GFD_alpha_diverisity without naive at the end of the expt.tiff", height = 5, width = 7)
+```
+
+
+
+#withput p value
+```{r}
+
+alpha.ps1 <- plot_richness(pseq, x="Time_of_sampling", measures=c("Shannon")) + geom_boxplot(aes(fill=Treatment))
+
+p1 <- alpha.ps1 + scale_fill_manual(values = c("#3399FF",  "#000099","#009900")) + theme(strip.background = element_rect(fill="white")) + ggtitle("Diversity of gut microbiota of GFD fed mice") + theme_bw(base_size = 12) + theme(plot.title = element_text(size = 12)) + theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) + facet_grid(cols = vars(Treatment)) 
+p1
+ggsave("after removing 1730GFD_Microbial diverisity without naive at the end of the expt without p value.tiff", height = 5, width = 7)
+```
+
+
+```{R}
+
+pseq <- read.csv("alpha_div_div.all.csv")
+pseq
+my_comparisons1<- list(c("Experiment_Started", "Mice_Sacrificed") )
+
+p <- ggplot(pseq, aes(y=Shannon, x=Time_of_sampling, fill= Treatment))+ 
+    scale_fill_manual(values = c("#3399FF",  "#000099","#009900") ) + stat_boxplot(geom='errorbar', linetype=1, width=0.5)+  
+  geom_boxplot(outlier.shape=15) + theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) +  theme(panel.grid.minor = element_blank())+  theme(strip.background = element_rect(colour="black",  
+                                       size=0.5))+ facet_grid(cols =  vars(Treatment))+theme(strip.text = element_text(size = 10, face="bold")) + ggtitle("Diversity of gut microbiota of GFD fed mice") 
+p
+ggsave("after removing 1730Prevotella naive_after_removing_outlier_from_p_melaninogenica.tiff", height = 5, width = 8 )
+```
