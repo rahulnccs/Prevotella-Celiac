@@ -1,0 +1,338 @@
+---
+title: "Relative abundance"
+author: "Rahul Bodkhe"
+date: "October 29, 2018"
+output: html_document
+---
+
+```{r,kk}
+library(phyloseq)
+library(microbiome)
+library(vegan)
+library(ggplot2)
+library(ggpubr)
+```
+##at the end of the experiment
+
+```{r}
+rm(list = ls())
+pseq1 <- readRDS("Gluten_Containing_Diet_qiime_Green_gene_final.rds")
+pseq3 <- subset_samples(pseq1, Treatment!= "Media_A.Muc")
+pseq4 <- subset_samples(pseq3, Treatment!= "Media_F.praus")
+pseq7 <- subset_samples(pseq4, Treatment != c("F.prausnitzii"))
+pseq12 <- subset_samples(pseq7, Treatment != c("A.Muciniphila")) 
+pseq13 <- subset_samples(pseq12, Treatment != c(".Naïve"))
+pseq15 <- subset_samples(pseq13, Treatment != c(".PTD_Gliadin_Injected")) 
+pseq15
+pseq <- prune_taxa(taxa_sums(pseq15)>1, pseq15)
+sample_data(pseq)
+```
+```{r}
+my_comparisons1<- list(c("Mice_Sacrificed", "Experiment_Started"))
+```
+```{r}
+taxic <- as.data.frame(pseq@tax_table) 
+taxic$OTU <- row.names(taxic)
+taxmat <- as.matrix(taxic)
+new.tax <- tax_table(taxmat)  
+tax_table(pseq) <- new.tax 
+
+```
+
+```{r}
+pseq.phy <- aggregate_taxa(pseq, "Genus")
+tax_table(pseq.phy)[, colnames(tax_table(pseq.phy))] <- gsub(tax_table(pseq.phy)[, 
+                                                       colnames(tax_table(pseq.phy))], pattern = "P__", replacement = "")
+```
+```{r}
+pseq.phy.rel<- transform(pseq.phy, "compositional")
+ps.m <- psmelt(pseq.phy.rel)
+ps.m1 <- subset(ps.m,OTU != "unassigned")
+
+ps.m2 <- subset(ps.m1,OTU != "NA")
+```
+ps.mm2 <- subset(ps.m1, OTU != "g__Ruminococcus")
+ps.m3 <- subset(ps.mm2,OTU != "g__Propionibacterium")
+ps.mm4 <- subset(ps.m3, OTU != "g__Parabacteroides")
+ps.m5 <- subset(ps.mm4,OTU != "g__Oscillospira")
+ps.mm6 <- subset(ps.m5, OTU != "g__Lactococcus")
+ps.m7<- subset(ps.mm6,OTU != "g__Odoribacter")
+ps.mm8 <- subset(ps.m7, OTU != "g__Lactobacillus")
+ps.m9<- subset(ps.mm8,OTU != "g__Bacteroides")
+ps.mm10 <- subset(ps.m9, OTU != "g__Enterococcus")
+ps.m11 <- subset(ps.mm10,OTU != "g__Anaerotruncus")
+ps.mm12 <- subset(ps.m11, OTU != "g__Allobaculum")
+ps.m13 <- subset(ps.mm12,OTU != "g__Adlercreutzia")
+ps.mm14 <- subset(ps.m13, OTU != "g__[Ruminococcus]")
+
+g__Desulfovibrio
+__Streptococcus
+```{r}
+ps.m2 <- subset(ps.m, OTU == "g__[Ruminococcus]")
+ps.m.sub <- ps.m2 
+
+px2 <- ggboxplot(ps.m.sub, x = "Time_of_sampling", y = "Abundance", 
+                 
+                 fill = "Treatment",                   
+                 bxp.errorbar = TRUE,
+                                   palette = c("#000000",  "#D3D3D3","#696969"), 
+                 facet.by = "OTU", 
+                 legend = "right",
+                 ylab = "Relative abundance") + stat_compare_means(comparisons = my_comparisons1, method = "wilcox.test") +
+theme(plot.title = element_text(size = 1)) +  scale_y_log10() + theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())  +facet_grid(cols =  vars(Treatment))+  theme(strip.text = element_text(size = 10, face="bold"))
+print(px2)
+
+ggsave("GCD_Relative_abundanceg__Ruminococcus.tiff", height = 5, width = 8)
+
+px2 <- ggboxplot(ps.m.sub, x = "Time_of_sampling", y = "Abundance", 
+                 
+                 fill = "Treatment",                   
+                 bxp.errorbar = TRUE,
+                                   palette = c("#000000",  "#D3D3D3","#696969"), 
+                 facet.by = "OTU", 
+                 legend = "right",
+                 ylab = "Relative abundance") +
+theme(plot.title = element_text(size = 1)) +  scale_y_log10() + theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())  +facet_grid(cols =  vars(Treatment))+  theme(strip.text = element_text(size = 10, face="bold"))
+print(px2)
+
+ggsave("GCD_Relative_np_abundanceg__Ruminococcus.tiff", height = 5, width = 8)
+
+```
+
+
+
+```{r}
+ps.m2 <- subset(ps.m, OTU == "g__Allobaculum")
+ps.m.sub <- ps.m2 
+
+px2 <- ggboxplot(ps.m.sub, x = "Time_of_sampling", y = "Abundance", 
+                 
+                 fill = "Treatment",                   
+                  
+                 bxp.errorbar = TRUE,
+                                   palette = c("#000000",  "#D3D3D3","#696969"), 
+                 facet.by = "OTU", 
+                 legend = "right",
+                 ylab = "Relative abundance") + stat_compare_means(comparisons = my_comparisons1, method = "wilcox.test") +
+theme(plot.title = element_text(size = 1)) +  scale_y_log10() + theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())  +facet_grid(cols =  vars(Treatment))+  theme(strip.text = element_text(size = 10, face="bold"))
+print(px2)
+
+ggsave("GCD_Relative_abundanceg__Allobaculum.tiff", height = 5, width = 8)
+
+px2 <- ggboxplot(ps.m.sub, x = "Time_of_sampling", y = "Abundance", 
+                 
+                 fill = "Treatment",                   
+                  
+                 bxp.errorbar = TRUE,
+                                   palette = c("#000000",  "#D3D3D3","#696969"),
+                 facet.by = "OTU", 
+                 legend = "right",
+                 ylab = "Relative abundance") + 
+theme(plot.title = element_text(size = 1)) +  scale_y_log10() + theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())  +facet_grid(cols =  vars(Treatment))+  theme(strip.text = element_text(size = 10, face="bold"))
+print(px2)
+
+ggsave("GCD_Relative_np_abundance__Allobaculum.tiff", height = 5, width = 8)
+```
+
+```{r}
+ps.m2 <- subset(ps.m, OTU == "g__Anaerotruncus")
+ps.m.sub <- ps.m2 
+
+px2 <- ggboxplot(ps.m.sub, x = "Time_of_sampling", y = "Abundance", 
+                 
+                 fill = "Treatment",                   
+                 bxp.errorbar = TRUE,
+                                   palette = c("#000000",  "#D3D3D3","#696969"), 
+                 facet.by = "OTU", 
+                 legend = "right",
+                 ylab = "Relative abundance") + stat_compare_means(comparisons = my_comparisons1, method = "wilcox.test") +
+theme(plot.title = element_text(size = 1)) +  scale_y_log10() + theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())  +facet_grid(cols =  vars(Treatment))+  theme(strip.text = element_text(size = 10, face="bold"))
+print(px2)
+
+ggsave("GCD_Relative_abundanceg__Anaerotruncus.tiff", height = 5, width = 8)
+
+px2 <- ggboxplot(ps.m.sub, x = "Time_of_sampling", y = "Abundance", 
+                 
+                 fill = "Treatment",                   
+                 bxp.errorbar = TRUE,
+                                   palette = c("#000000",  "#D3D3D3","#696969"), 
+                 facet.by = "OTU", 
+                 legend = "right",
+                 ylab = "Relative abundance") + 
+theme(plot.title = element_text(size = 1)) +  scale_y_log10() + theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())  +facet_grid(cols =  vars(Treatment))+  theme(strip.text = element_text(size = 10, face="bold"))
+print(px2)
+
+ggsave("GCD_Relative_np_abundanceg__Anaerotruncus.tiff", height = 5, width = 8)
+```
+
+```{r}
+ps.m2 <- subset(ps.m, OTU == "g__Bacteroides")
+ps.m.sub <- ps.m2 
+
+px2 <- ggboxplot(ps.m.sub, x = "Time_of_sampling", y = "Abundance", 
+                 
+                 fill = "Treatment",                   
+                  
+                 bxp.errorbar = TRUE,
+                                   palette = c("#000000",  "#D3D3D3","#696969"), 
+                 facet.by = "OTU", 
+                 legend = "right",
+                 ylab = "Relative abundance") + stat_compare_means(comparisons = my_comparisons1, method = "wilcox.test") +
+theme(plot.title = element_text(size = 1)) +  scale_y_log10() + theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())  +facet_grid(cols =  vars(Treatment))+  theme(strip.text = element_text(size = 10, face="bold"))
+print(px2)
+
+ggsave("GCD_Relative_abundanceg__Bacteroides.tiff", height = 5, width = 8)
+
+px2 <- ggboxplot(ps.m.sub, x = "Time_of_sampling", y = "Abundance", 
+                 
+                 fill = "Treatment",                   
+                  
+                 bxp.errorbar = TRUE,
+                                   palette = c("#000000",  "#D3D3D3","#696969"), 
+                 facet.by = "OTU", 
+                 legend = "right",
+                 ylab = "Relative abundance") + 
+theme(plot.title = element_text(size = 1)) +  scale_y_log10() + theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())  +facet_grid(cols =  vars(Treatment))+  theme(strip.text = element_text(size = 10, face="bold"))
+print(px2)
+
+ggsave("GCD_Relative_np_abundanceg__Bacteroides.tiff", height = 5, width = 8)
+```
+
+
+```{r}
+ps.m2 <- subset(ps.m, OTU == "g__Lactobacillus")
+ps.m.sub <- ps.m2 
+
+px2 <- ggboxplot(ps.m.sub, x = "Time_of_sampling", y = "Abundance", 
+                 
+                 fill = "Treatment",                   
+                  
+                 bxp.errorbar = TRUE,
+                                   palette = c("#000000",  "#D3D3D3","#696969"), 
+                 facet.by = "OTU", 
+                 legend = "right",
+                 ylab = "Relative abundance") + stat_compare_means(comparisons = my_comparisons1, method = "wilcox.test") +
+theme(plot.title = element_text(size = 1)) +  scale_y_log10() + theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())  +facet_grid(cols =  vars(Treatment))+  theme(strip.text = element_text(size = 10, face="bold"))
+print(px2)
+
+ggsave("GCD_Relative_abundanceg__Lactobacillus.tiff", height = 5, width = 8)
+
+
+px2 <- ggboxplot(ps.m.sub, x = "Time_of_sampling", y = "Abundance", 
+                 
+                 fill = "Treatment",                   
+                  
+                 bxp.errorbar = TRUE,
+                                   palette = c("#000000",  "#D3D3D3","#696969"), 
+                 facet.by = "OTU", 
+                 legend = "right",
+                 ylab = "Relative abundance") + 
+theme(plot.title = element_text(size = 1)) +  scale_y_log10() + theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())  +facet_grid(cols =  vars(Treatment))+  theme(strip.text = element_text(size = 10, face="bold"))
+print(px2)
+
+ggsave("GCD_Relative_np_abundanceg__Lactobacillus.tiff", height = 5, width = 8)
+```
+
+
+
+
+
+
+
+```{r}
+ps.m2 <- subset(ps.m, OTU == "g__Parabacteroides")
+ps.m.sub <- ps.m2 
+
+px2 <- ggboxplot(ps.m.sub, x = "Time_of_sampling", y = "Abundance", 
+                 
+                 fill = "Treatment",                   
+                  
+                 bxp.errorbar = TRUE,
+                                   palette = c("#000000",  "#D3D3D3","#696969"), 
+                 facet.by = "OTU", 
+                 legend = "right",
+                 ylab = "Relative abundance") + stat_compare_means(comparisons = my_comparisons1, method = "wilcox.test") +
+theme(plot.title = element_text(size = 1)) +  scale_y_log10() + theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())  +facet_grid(cols =  vars(Treatment))+  theme(strip.text = element_text(size = 10, face="bold"))
+print(px2)
+
+ggsave("GCD_Relative_abundanceg__Parabacteroides.tiff", height = 5, width = 8)
+
+
+px2 <- ggboxplot(ps.m.sub, x = "Time_of_sampling", y = "Abundance", 
+                 
+                 fill = "Treatment",                   
+                  
+                 bxp.errorbar = TRUE,
+                                   palette = c("#000000",  "#D3D3D3","#696969"), 
+                 facet.by = "OTU", 
+                 legend = "right",
+                 ylab = "Relative abundance") + 
+theme(plot.title = element_text(size = 1)) +  scale_y_log10() + theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())  +facet_grid(cols =  vars(Treatment))+  theme(strip.text = element_text(size = 10, face="bold"))
+print(px2)
+
+ggsave("GCD_Relative_np_abundanceg__Parabacteroides.tiff", height = 5, width = 8)
+```
+
+
+
+
+```{r}
+ps.m2 <- subset(ps.m, OTU == "g__Ruminococcus")
+ps.m.sub <- ps.m2 
+
+px2 <- ggboxplot(ps.m.sub, x = "Time_of_sampling", y = "Abundance", 
+                 
+                 fill = "Treatment",                   
+                  
+                 bxp.errorbar = TRUE,
+                                   palette = c("#000000",  "#D3D3D3","#696969"), 
+                 facet.by = "OTU", 
+                 legend = "right",
+                 ylab = "Relative abundance") + stat_compare_means(comparisons = my_comparisons1, method = "wilcox.test") +
+theme(plot.title = element_text(size = 1)) +  scale_y_log10() + theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())  +facet_grid(cols =  vars(Treatment))+  theme(strip.text = element_text(size = 10, face="bold"))
+print(px2)
+
+ggsave("GCD_Relative_abundanceg__Ruminococcus.tiff", height = 5, width = 8)
+
+px2 <- ggboxplot(ps.m.sub, x = "Time_of_sampling", y = "Abundance", 
+                 
+                 fill = "Treatment",                   
+                  
+                 bxp.errorbar = TRUE,
+                                   palette = c("#000000",  "#D3D3D3","#696969"), 
+                 facet.by = "OTU", 
+                 legend = "right",
+                 ylab = "Relative abundance") + 
+theme(plot.title = element_text(size = 1)) +  scale_y_log10() + theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())  +facet_grid(cols =  vars(Treatment))+  theme(strip.text = element_text(size = 10, face="bold"))
+print(px2)
+
+ggsave("GCD_Relative_np_abundanceg__Ruminococcus.tiff", height = 5, width = 8)
+```

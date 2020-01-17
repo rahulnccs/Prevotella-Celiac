@@ -1,0 +1,142 @@
+---
+title: "Human gut- derived commensal induces tolerance to gluten in humanized mice"
+author: "Rahul L Bodkhe"
+date: "October 26, 2018"
+output: html_document
+---
+
+```{r,kk}
+library(phyloseq)
+library(microbiome)
+library(vegan)
+```
+##1 end of the expt
+```{r}
+rm(list = ls())
+pseq4 <- readRDS("Gluten_Containing_Diet_qiime_Green_gene_final.rds")
+pseq2 <- subset_samples(pseq4, Time_of_sampling== "Mice_Sacrificed")
+pseq6 <- subset_samples(pseq2, Treatment!= "Media_A.Muc")
+pseq8 <- subset_samples(pseq6, Treatment!= "Media_F.praus")
+pseq9 <- subset_samples(pseq8, Treatment!= ".Naïve")
+pseq10 <- subset_samples(pseq9, Treatment!= "F.prausnitzii")
+pseq11 <- subset_samples(pseq10, Treatment!= ".PTD_Gliadin_Injected")
+pseq12 <- subset_samples(pseq11, Treatment!= "A.Muciniphila")
+pseq3 = prune_samples(sample_sums(pseq12) > 100, pseq12)
+pseq <- prune_taxa(taxa_sums(pseq3) > 0, pseq3)
+any(taxa_sums(pseq) == 0)
+sample_data(pseq)
+pseq
+```
+
+```{r}
+pseq.rel.2 <- transform(pseq, "compositional")
+
+ord_mds_bray1 <- ordinate(pseq.rel.2, "PCoA", "bray")
+beta.ps1 <- plot_ordination(pseq.rel.2, 
+                            ord_mds_bray1, 
+                           
+                            color="Treatment") 
+
+
+
+
+p9 <- beta.ps1 + ggtitle("Microbial Beta Diversity in Mice at the end of the experiment") + theme_bw(base_size = 12) + theme(plot.title = element_text(size = 12, face= "bold")) + scale_color_manual(values = c("#3399FF",  "#000099","#009900")) + geom_point(shape=15, size= 3)
+p9
+ggsave("GCD Microbial beta Diversity with naive2.tiff", height = 5, width = 7)
+p9 + stat_ellipse()
+ggsave("GCD Microbial beta Diversity with naive with circle2.tiff", height = 5, width = 7)
+```
+```{r}
+attach(sample_data(pseq.rel.2))
+dist.all1 <- phyloseq::distance(otu_table(pseq.rel.2), method= 'bray')
+SampleType_anosim1<-anosim(dist.all1, Treatment, permutations = 999, distance = "bray")
+summary(SampleType_anosim1)
+detach(sample_data(pseq.rel.2))
+```
+
+##1.##start of the expt
+```{r}
+rm(list = ls())
+pseq1 <- readRDS("Gluten_Containing_Diet_qiime_Green_gene_final.rds")
+pseq6 <- subset_samples(pseq1, Time_of_sampling!= "Mice_Sacrificed")
+pseq3 <- subset_samples(pseq6, Treatment!= "Media_A.Muc")
+pseq4 <- subset_samples(pseq3, Treatment!= "Media_F.praus")
+pseq7 <- subset_samples(pseq4, Treatment != c("F.prausnitzii"))
+
+pseq12 <- subset_samples(pseq7, Treatment != c("A.Muciniphila")) 
+pseq13 <- subset_samples(pseq12, Treatment != c(".Naïve"))
+pseq14 <- subset_samples(pseq13, Treatment != c(".PTD_Gliadin_Injected")) 
+pseq15 = prune_samples(sample_sums(pseq14) > 100, pseq14)
+pseq15
+pseq <- prune_taxa(taxa_sums(pseq15)>1, pseq15)
+sample_data(pseq)
+```
+
+```{r}
+pseq.rel.2 <- transform(pseq, "compositional")
+
+ord_mds_bray1 <- ordinate(pseq.rel.2, "PCoA", "bray")
+beta.ps1 <- plot_ordination(pseq.rel.2, 
+                            ord_mds_bray1, 
+                           
+                            color="Treatment") 
+
+
+
+
+p9 <- beta.ps1 + ggtitle("Microbial Beta Diversity in Mice at start of the experiment") + theme_bw(base_size = 12) + theme(plot.title = element_text(size = 12, face= "bold")) + scale_color_manual(values = c("#3399FF",  "#000099","#009900")) + geom_point(shape=16, size= 3)
+p9
+ggsave("GCD Microbial beta at the start.tiff", height = 5, width = 7)
+p9 + stat_ellipse()
+ggsave("GCD Microbial beta at the start with circle2.tiff", height = 5, width = 7)
+```
+```{r}
+attach(sample_data(pseq.rel.2))
+dist.all1 <- phyloseq::distance(otu_table(pseq.rel.2), method= 'bray')
+SampleType_anosim1<-anosim(dist.all1, Treatment, permutations = 999, distance = "bray")
+summary(SampleType_anosim1)
+detach(sample_data(pseq.rel.2))
+```
+#cOMBINED
+##1.##start of the expt
+```{r}
+rm(list = ls())
+pseq1 <- readRDS("Gluten_Containing_Diet_qiime_Green_gene_final.rds")
+
+pseq3 <- subset_samples(pseq1, Treatment!= "Media_A.Muc")
+pseq4 <- subset_samples(pseq3, Treatment!= "Media_F.praus")
+pseq7 <- subset_samples(pseq4, Treatment != c("F.prausnitzii"))
+pseq12 <- subset_samples(pseq7, Treatment != c("A.Muciniphila")) 
+pseq13 <- subset_samples(pseq12, Treatment != c(".Naïve"))
+pseq14 <- subset_samples(pseq13, Treatment != c(".PTD_Gliadin_Injected")) 
+pseq15 = prune_samples(sample_sums(pseq14) > 100, pseq14)
+pseq15
+pseq <- prune_taxa(taxa_sums(pseq15)>1, pseq15)
+sample_data(pseq)
+```
+
+```{r}
+pseq.rel.2 <- transform(pseq, "compositional")
+
+ord_mds_bray1 <- ordinate(pseq.rel.2, "PCoA", "bray")
+beta.ps1 <- plot_ordination(pseq.rel.2, 
+                            ord_mds_bray1,
+                            shape = "Time_of_sampling",
+                            color="Treatment") 
+
+
+
+
+p9 <- beta.ps1 + ggtitle("Microbial Beta Diversity in Mice at start and end of the experiment") + theme_bw(base_size = 12) + theme(plot.title = element_text(size = 12, face= "bold")) + scale_color_manual(values = c("#3399FF",  "#000099","#009900")) + scale_shape_manual(values=c(16, 15))+geom_point( size= 3)
+p9
+ggsave("GCD Microbial beta at the start end.tiff", height = 5, width = 7)
+p9 + stat_ellipse()
+ggsave("GCD Microbial beta at the start end with circle2.tiff", height = 5, width = 7)
+```
+```{r}
+attach(sample_data(pseq.rel.2))
+dist.all1 <- phyloseq::distance(otu_table(pseq.rel.2), method= 'bray')
+SampleType_anosim1<-anosim(dist.all1, Treatment, permutations = 999, distance = "bray")
+summary(SampleType_anosim1)
+detach(sample_data(pseq.rel.2))
+```
